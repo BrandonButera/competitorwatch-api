@@ -57,8 +57,11 @@ app.get('/', (req, res) => {
                   products: '/api/v1/products',
                   productComparison: '/api/v1/products/compare',
                   market: '/api/v1/market',
+                  marketOpportunities: '/api/v1/market/opportunities',
                   alerts: '/api/v1/alerts',
+                  alertPerformance: '/api/v1/alerts/performance',
                   analysis: '/api/v1/analysis',
+                  benchmarkAnalysis: '/api/v1/analysis/benchmark',
                   health: '/api/health'
           }
     });

@@ -71,4 +71,59 @@ router.get('/trends', async (req, res) => {
     }
 });
 
+// GET /api/v1/market/opportunities - Highlight high-ROI gaps by channel
+router.get('/opportunities', async (req, res) => {
+    try {
+          const { category = 'headphones', region = 'US' } = req.query;
+
+      const opportunities = {
+              success: true,
+              category,
+              region,
+              generatedAt: new Date(),
+              opportunities: [
+                {
+                            segment: 'Premium noise-cancelling',
+                            revenueUpside: '$4.2M',
+                            rationale: 'Rising demand with limited bundled warranty offers',
+                            topCompetitors: ['Sony', 'Bose'],
+                            recommendedActions: ['Introduce bundle with charger', 'Launch 0% APR financing'],
+                            riskLevel: 'medium'
+                },
+                {
+                            segment: 'Entry-level wireless',
+                            revenueUpside: '$1.1M',
+                            rationale: 'High search volume but weak review coverage',
+                            topCompetitors: ['Anker', 'JBL'],
+                            recommendedActions: ['Increase review generation', 'Offer limited-time couponing'],
+                            riskLevel: 'low'
+                },
+                {
+                            segment: 'Gaming headsets',
+                            revenueUpside: '$2.6M',
+                            rationale: 'Competitors running weekly promos without MAP enforcement',
+                            topCompetitors: ['Razer', 'Logitech'],
+                            recommendedActions: ['Monitor MAP compliance', 'Launch influencer co-marketing'],
+                            riskLevel: 'high'
+                }
+              ],
+              channelMix: {
+                        marketplaces: { share: '62%', momentum: 'Up 6% MoM' },
+                        directToConsumer: { share: '23%', momentum: 'Flat' },
+                        retailPartners: { share: '15%', momentum: 'Down 2% MoM' }
+              },
+              inventorySignals: {
+                        lowStockItems: 42,
+                        backorderRate: '3.2%',
+                        recommendedSafetyStockDays: 18,
+                        criticalVendors: ['GlobalAcoustics', 'PremiumAudio Labs']
+              }
+      };
+
+      res.json(opportunities);
+    } catch (error) {
+          res.status(500).json({ error: error.message });
+    }
+});
+
 module.exports = router;
