@@ -55,6 +55,7 @@ app.get('/', (req, res) => {
           version: '1.0.0',
           endpoints: {
                   products: '/api/v1/products',
+                  productComparison: '/api/v1/products/compare',
                   market: '/api/v1/market',
                   alerts: '/api/v1/alerts',
                   analysis: '/api/v1/analysis',
