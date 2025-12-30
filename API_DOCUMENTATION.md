@@ -1,268 +1,177 @@
-# CompetitorWatch API - Complete Documentation
+# CompetitorWatch API Documentation
 
 ## Overview
+Real-time web scraping API with AI-assisted analysis for competitor monitoring. Track pricing, products, reviews, and market trends across e-commerce platforms.
 
-Real-time web scraping API with Claude AI analysis for competitor monitoring. Track pricing, products, reviews, and market trends across e-commerce platforms.
-
-**Base URL:** `https://api.competitorwatch.com/api/v1`  
-**Version:** 1.0.0  
-**Authentication:** API Key (x-api-key header)
+**Base URL:** `https://api.competitorwatch.com`
+**Version:** `v1`
+**Authentication:** API Key (`x-api-key` header)
 
 ---
 
-## Endpoints
+## Products API
 
-### 1. Products API
+### GET `/api/v1/products/search`
+Search for products across multiple retailers.
 
-#### GET /products/search
-Search for products across multiple retailers with competitor pricing.
+**Query Parameters**
+- `keyword` (string) — Product keyword to search. One of `keyword`, `url`, or `sku` is required.
+- `url` (string) — Direct product URL.
+- `sku` (string) — Product SKU.
+- `page` (number, default: 1) — Page number.
+- `limit` (number, default: 20) — Results per page.
 
-**Query Parameters:**
-- `keyword` (string) - Product keyword to search
-- - `url` (string) - Direct product URL
-  - - `sku` (string) - Product SKU
-    - - `page` (number) - Page number (default: 1)
-      - - `limit` (number) - Results per page (default: 20)
-       
-        - **Example Request:**
-        - ```bash
-          curl -X GET "https://api.competitorwatch.com/api/v1/products/search?keyword=wireless%20headphones" \
-            -H "x-api-key: your_api_key"
-          ```
+**Example**
+```bash
+curl -X GET "https://api.competitorwatch.com/api/v1/products/search?keyword=wireless%20headphones" \
+  -H "x-api-key: your_api_key"
+```
 
-          **Response:**
-          ```json
-          {
-            "success": true,
-            "query": { "keyword": "wireless headphones" },
-            "pagination": { "page": 1, "limit": 20, "total": 145 },
-            "products": [
-              {
-                "id": "prod_001",
-                "title": "Wireless Bluetooth Headphones",
-                "retailer": "Amazon",
-                "price": 79.99,
-                "originalPrice": 129.99,
-                "discount": "38%",
-                "rating": 4.5,
-                "reviews": 2341,
-                "availability": "In Stock",
-                "competitors": [
-                  { "retailer": "Best Buy", "price": 84.99 },
-                  { "retailer": "Walmart", "price": 75.99 }
-                ]
-              }
-            ]
-          }
-          ```
+**Response Snapshot**
+```json
+{
+  "success": true,
+  "query": { "keyword": "wireless headphones" },
+  "pagination": { "page": 1, "limit": 20, "total": 145 },
+  "products": [
+    {
+      "id": "prod_001",
+      "title": "Wireless Bluetooth Headphones",
+      "retailer": "Amazon",
+      "price": 79.99,
+      "originalPrice": 129.99,
+      "discount": "38%",
+      "rating": 4.5,
+      "reviews": 2341,
+      "availability": "In Stock",
+      "competitors": [
+        { "retailer": "Best Buy", "price": 84.99 },
+        { "retailer": "Walmart", "price": 75.99 }
+      ]
+    }
+  ]
+}
+```
 
-          ---
+### GET `/api/v1/products/pricing`
+Get real-time pricing data for specific products.
 
-          #### GET /products/pricing
-          Get real-time pricing data for specific products.
+**Query Parameters**
+- `productId` (string) — Product ID.
+- `asin` (string) — Amazon ASIN.
+- `sku` (string) — Product SKU.
 
-          **Query Parameters:**
-          - `productId` (string) - Product ID
-          - - `asin` (string) - Amazon ASIN
-            - - `sku` (string) - Product SKU
-             
-              - **Response includes:**
-              - - Current prices across retailers
-                - - Price history with trends
-                  - - Shipping costs
-                    - - Stock availability
-                      - - Estimated delivery times
-                       
-                        - ---
+**Response Highlights**
+- Current prices across retailers.
+- Price history with trends.
+- Shipping costs and stock availability.
+- Estimated delivery times.
 
-                        #### GET /products/reviews
-                        Get and analyze customer reviews with sentiment analysis.
+### GET `/api/v1/products/reviews`
+Get and analyze customer reviews with sentiment analysis.
 
-                        **Query Parameters:**
-                        - `productId` (string) - Product ID
-                        - - `retailer` (string) - Specific retailer
-                          - - `limit` (number) - Number of reviews (default: 10)
-                           
-                            - **Response includes:**
-                            - - Overall sentiment score (1-5)
-                              - - Review distribution
-                                - - Top positive/negative themes
-                                  - - AI-powered analysis of strengths/weaknesses
-                                   
-                                    - ---
+**Query Parameters**
+- `productId` (string) — Product ID.
+- `retailer` (string) — Specific retailer.
+- `limit` (number, default: 10) — Number of reviews.
 
-                                    ### 2. Market API
+**Response Highlights**
+- Overall sentiment score and distribution.
+- Top positive and negative themes.
+- AI-powered summary of strengths and weaknesses.
 
-                                    #### GET /market/trends
-                                    Analyze market trends and competitive landscape.
+---
 
-                                    **Query Parameters:**
-                                    - `category` (string) - Product category
-                                    - - `retailers` (array) - Retailer list
-                                      - - `timeframe` (string) - Time period (30days, 90days, 1year)
-                                       
-                                        - **Response includes:**
-                                        - - Market size and growth
-                                          - - Price trends and volatility
-                                            - - Trending products (up/down)
-                                              - - Seasonal patterns
-                                                - - Competitor metrics
-                                                 
-                                                  - ---
+## Market API
 
-                                                  ### 3. Alerts API
+### GET `/api/v1/market/trends`
+Analyze market trends and competitive landscape.
 
-                                                  #### POST /alerts/setup
-                                                  Configure price alerts and notifications.
+**Query Parameters**
+- `category` (string) — Product category.
+- `retailers` (array) — Retailer list (default: Amazon, Walmart, BestBuy).
+- `timeframe` (string, default: `30days`) — Time window (`30days`, `90days`, `1year`).
 
-                                                  **Request Body:**
-                                                  ```json
-                                                  {
-                                                    "productId": "prod_001",
-                                                    "targetPrice": 75.00,
-                                                    "notificationMethod": "email",
-                                                    "thresholdType": "exact"
-                                                  }
-                                                  ```
+**Response Highlights**
+- Market size and growth.
+- Price trends and volatility.
+- Trending products (up/down).
+- Seasonal patterns.
+- Competitor metrics.
 
-                                                  **Response:**
-                                                  - Alert ID
-                                                  - - Configuration details
-                                                    - - Notification channels
-                                                      - - Active status
-                                                       
-                                                        - ---
+---
 
-                                                        #### GET /alerts/monitoring
-                                                        Get list of active price alerts.
+## Alerts API
 
-                                                        **Response includes:**
-                                                        - All active alerts
-                                                        - - Current prices vs targets
-                                                          - - Savings potential
-                                                            - - Notification history
-                                                              - - Total savings across alerts
-                                                               
-                                                                - ---
+### POST `/api/v1/alerts/setup`
+Configure price alerts and notifications.
 
-                                                                ### 4. Analysis API
+**Request Body (example)**
+```json
+{
+  "productId": "prod_001",
+  "targetPrice": 75.00,
+  "notificationMethod": "email",
+  "thresholdType": "exact"
+}
+```
 
-                                                                #### POST /analysis/comprehensive
-                                                                Deep analysis of competitor stores using Claude AI.
+### GET `/api/v1/alerts/monitoring`
+Get list of active price alerts and current status.
 
-                                                                **Request Body:**
-                                                                ```json
-                                                                {
-                                                                  "storeUrl": "https://example-store.com",
-                                                                  "productCategory": "Electronics",
-                                                                  "competitors": ["Amazon", "Walmart"],
-                                                                  "depth": "standard"
-                                                                }
-                                                                ```
+**Response Highlights**
+- Active alerts and current prices vs. targets.
+- Notification history.
+- Savings potential per alert and in total.
 
-                                                                **Response includes:**
-                                                                - SWOT Analysis
-                                                                - - Competitive Intelligence (market share, growth trends)
-                                                                  - - Strategic Recommendations
-                                                                    - - Marketing Insights
-                                                                      - - Financial Projections
-                                                                       
-                                                                        - ---
+---
 
-                                                                        ### 5. Health Check
+## Analysis API
 
-                                                                        #### GET /health
-                                                                        API health status endpoint.
+### POST `/api/v1/analysis/comprehensive`
+Deep analysis of competitor stores using Claude AI.
 
-                                                                        **Response:**
-                                                                        ```json
-                                                                        {
-                                                                          "status": "OK",
-                                                                          "timestamp": "2025-01-27T14:30:00Z",
-                                                                          "version": "1.0.0",
-                                                                          "uptime": 3600,
-                                                                          "checks": {
-                                                                            "api": "operational",
-                                                                            "database": "operational",
-                                                                            "cache": "operational"
-                                                                          }
-                                                                        }
-                                                                        ```
+**Request Body (example)**
+```json
+{
+  "storeUrl": "https://example-store.com",
+  "productCategory": "Electronics",
+  "competitors": ["Amazon", "Walmart"],
+  "depth": "standard"
+}
+```
 
-                                                                        ---
+**Response Highlights**
+- SWOT analysis and competitive intelligence.
+- Strategic recommendations and marketing insights.
+- Financial projections (mocked data).
 
-                                                                        ## Authentication
+---
 
-                                                                        All API requests require an API key in the header:
+## Health Check
 
-                                                                        ```bash
-                                                                        x-api-key: your_api_key_here
-                                                                        ```
+### GET `/api/health`
+API health status endpoint.
 
-                                                                        ---
+**Response Snapshot**
+```json
+{
+  "status": "OK",
+  "timestamp": "2025-01-27T14:30:00Z",
+  "version": "1.0.0",
+  "uptime": 3600,
+  "checks": {
+    "api": "operational",
+    "database": "operational",
+    "cache": "operational"
+  }
+}
+```
 
-                                                                        ## Rate Limiting
+---
 
-                                                                        - **Free Tier:** 100 requests/15 minutes
-                                                                        - - **Starter:** 1,000 requests/month
-                                                                          - - **Professional:** 10,000 requests/month
-                                                                            - - **Enterprise:** Unlimited
-                                                                             
-                                                                              - Response headers include:
-                                                                              - - `X-RateLimit-Limit`
-                                                                                - - `X-RateLimit-Remaining`
-                                                                                  - - `X-RateLimit-Reset`
-                                                                                   
-                                                                                    - ---
-
-                                                                                    ## Error Handling
-
-                                                                                    Standard HTTP status codes:
-                                                                                    - `200` - Success
-                                                                                    - - `400` - Bad Request
-                                                                                      - - `401` - Unauthorized
-                                                                                        - - `429` - Rate Limited
-                                                                                          - - `500` - Server Error
-                                                                                           
-                                                                                            - Error Response Format:
-                                                                                            - ```json
-                                                                                              {
-                                                                                                "error": "Error message",
-                                                                                                "status": 400,
-                                                                                                "timestamp": "2025-01-27T14:30:00Z"
-                                                                                              }
-                                                                                              ```
-
-                                                                                              ---
-
-                                                                                              ## Installation & Setup
-
-                                                                                              ```bash
-                                                                                              # Install dependencies
-                                                                                              npm install
-
-                                                                                              # Configure environment
-                                                                                              cp .env.example .env
-                                                                                              # Edit .env with your API keys
-
-                                                                                              # Start server
-                                                                                              npm start
-
-                                                                                              # Development mode
-                                                                                              npm run dev
-                                                                                              ```
-
-                                                                                              ---
-
-                                                                                              ## Pricing Tiers
-
-                                                                                              - **Free:** $0/month - 100 calls/month
-                                                                                              - - **Starter:** $9.99/month - 1,000 calls/month
-                                                                                                - - **Professional:** $49.99/month - 10,000 calls/month
-                                                                                                  - - **Enterprise:** Custom pricing
-                                                                                                   
-                                                                                                    - ---
-                                                                                                    
-                                                                                                    ## Support
-                                                                                                    
-                                                                                                    For issues and questions, contact: support@competitorwatch.com
+## Authentication
+Include your API key with every request:
+```bash
+x-api-key: your_api_key_here
+```

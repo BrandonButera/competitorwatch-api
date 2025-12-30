@@ -22,7 +22,7 @@ router.get('/trends', async (req, res) => {
               },
               priceIntelligence: {
                         averagePrice: '$89.99',
-                        priceRange: { min: '$34.99, max: '$249.99' },
+                        priceRange: { min: '$34.99', max: '$249.99' },
                         priceMovement: '+2.3% week-over-week',
                         volatility: 'Medium'
               },
