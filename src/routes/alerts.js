@@ -99,4 +99,47 @@ router.get('/monitoring', async (req, res) => {
     }
 });
 
+// GET /api/v1/alerts/performance - Track alert effectiveness and wins
+router.get('/performance', async (req, res) => {
+    try {
+          const performance = {
+                  success: true,
+                  period: 'last_30_days',
+                  totals: {
+                          alertsConfigured: 42,
+                          alertsTriggered: 18,
+                          followThroughRate: '67%',
+                          estimatedSavings: '$1,420'
+                  },
+                  topSaves: [
+                    {
+                                alertId: 'alert_002',
+                                product: 'Noise-Cancelling Earbuds',
+                                triggeredAt: '2025-01-25T10:15:00Z',
+                                delta: '-23%',
+                                actionTaken: 'Price matched Best Buy',
+                                status: 'closed'
+                    },
+                    {
+                                alertId: 'alert_005',
+                                product: 'Wireless Gaming Headset',
+                                triggeredAt: '2025-01-21T08:40:00Z',
+                                delta: '-15%',
+                                actionTaken: 'Published limited-time coupon',
+                                status: 'active'
+                    }
+                  ],
+                  guardrails: {
+                          cooldownMinutes: 45,
+                          notificationCapPerHour: 60,
+                          webhookDestinations: ['https://hooks.zapier.com', 'https://ops.example.com/alerts']
+                  }
+          };
+
+          res.json(performance);
+    } catch (error) {
+          res.status(500).json({ error: error.message });
+    }
+});
+
 module.exports = router;
