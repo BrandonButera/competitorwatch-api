@@ -1,10 +1,13 @@
 const express = require('express');
+const { parseList } = require('../utils/query');
+
 const router = express.Router();
 
 // GET /api/v1/market/trends - Analyze market trends and competitive landscape
 router.get('/trends', async (req, res) => {
     try {
-          const { category, retailers = ['Amazon', 'Walmart', 'BestBuy'], timeframe = '30days' } = req.query;
+          const { category, timeframe = '30days' } = req.query;
+          const retailers = parseList(req.query.retailers, ['Amazon', 'Walmart', 'BestBuy']);
 
       const marketTrends = {
               success: true,

@@ -1,10 +1,13 @@
 const express = require('express');
+const { parseList, parseNumber, parsePagination } = require('../utils/query');
+
 const router = express.Router();
 
 // GET /api/v1/products/search - Search for products across multiple retailers
 router.get('/search', async (req, res) => {
     try {
-          const { keyword, url, sku, page = 1, limit = 20 } = req.query;
+          const { keyword, url, sku } = req.query;
+          const { page, limit } = parsePagination(req.query);
 
       if (!keyword && !url && !sku) {
               return res.status(400).json({ error: 'Provide keyword, url, or sku' });
@@ -109,7 +112,8 @@ router.get('/pricing', async (req, res) => {
 // GET /api/v1/products/reviews - Get and analyze customer reviews
 router.get('/reviews', async (req, res) => {
     try {
-          const { productId, retailer, limit = 10 } = req.query;
+          const { productId, retailer } = req.query;
+          const reviewLimit = parseNumber(req.query.limit, 10, { min: 1, max: 50 });
 
       const reviewsData = {
               success: true,
@@ -143,7 +147,7 @@ router.get('/reviews', async (req, res) => {
                             sentiment: 'mixed',
                             date: '2025-01-18'
                 }
-                      ],
+                      ].slice(0, reviewLimit),
               commonThemes: {
                         positive: ['excellent sound', 'long battery life', 'comfortable'],
                         negative: ['connectivity issues', 'price', 'bulky design'],
@@ -165,18 +169,13 @@ router.get('/reviews', async (req, res) => {
 // GET /api/v1/products/compare - Compare a primary product against competitor listings
 router.get('/compare', async (req, res) => {
     try {
-          const { primaryId, competitors = '', region = 'US', currency = 'USD' } = req.query;
+          const { primaryId, region = 'US', currency = 'USD' } = req.query;
 
       if (!primaryId) {
               return res.status(400).json({ error: 'primaryId is required' });
       }
 
-      const competitorIds = Array.isArray(competitors)
-              ? competitors
-              : competitors
-                      .split(',')
-                      .map((id) => id.trim())
-                      .filter(Boolean);
+      const competitorIds = parseList(req.query.competitors, []);
 
       const comparisonData = {
               success: true,
